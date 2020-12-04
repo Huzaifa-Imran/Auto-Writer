@@ -1,18 +1,25 @@
 from pynput.keyboard import Key, Controller, Listener
+import time
 import threading
 
 def process_keys(key):
     if str(key) == "Key.f2":
-        with open('content.txt', 'r') as file:
-            autowriter.type(file.read())
+        return False
 
 def main():
-    global autowriter
-    autowriter = Controller()
-    print('Press f2 to type the text of content.txt file')
-    keylog = Listener(on_press = process_keys)
-    with keylog:
-        keylog.join()
+    keyboard = Controller()
+    print('Press f2 to type the text of content.txt file.')
+    while True:
+        stop = False
+        with Listener(on_press = process_keys) as listener:
+            listener.join()
+        with open('content.txt', 'r') as file:
+            while True:
+                data = file.read(512)
+                if not data:
+                    break
+                keyboard.type(data)
+                time.sleep(0.5)
 
         
 if __name__ == '__main__':
